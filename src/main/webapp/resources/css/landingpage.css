@@ -1,0 +1,100 @@
+body, html {
+    font-family: Arial, serif;
+}
+
+.header {
+    font-size: 40px;
+    margin-top: 16px;
+}
+
+.sub-header {
+    font-size: 25px;
+}
+
+.main-flex-container {
+    display: flex;
+    flex-direction: column;
+    width: 75%;
+    margin: auto;
+}
+
+.control-container {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 25px 0 rgba(0, 0, 0, 0.19);
+    padding: 10px;
+    margin: 20px 10px;
+    min-width: 200px;
+    overflow-x: auto;
+    flex-grow: 2;
+}
+
+.generator-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 8px;
+    justify-content: space-evenly;
+}
+
+.generator-child {
+    display: flex;
+    flex-direction: column;
+    align-self: center;
+}
+
+.manually-container {
+    display: flex;
+    flex-direction: row;
+    margin-top: 8px;
+}
+
+.manually-child {
+    flex-grow: 2;
+    width: 48%;
+}
+
+.error {
+    color: red;
+}
+
+.hidden{
+    visibility: hidden;
+    display: none;
+}
+
+.center-horizontally{
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.divider{
+    background-color: lightgrey;
+    width: 2px;
+    margin-left: 1px;
+    margin-right: 8px;
+}
+
+.even-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+
+.flex-row {
+    display: flex;
+    flex-direction: row;
+}
+
+/* Responsive layout - wide screen -> 75% of the screen width; small screen -> 100% screen width*/
+@media (max-width: 1000px) {
+    .main-flex-container {
+        width: 100%;
+    }
+
+    .control-container {
+        width: initial;
+        margin: 10px 0;
+    }
+}

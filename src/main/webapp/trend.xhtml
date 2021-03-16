@@ -1,0 +1,104 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+>
+
+<h:head>
+    <h:outputStylesheet library="css" name="trend.css"/>
+    <h:outputStylesheet library="css" name="loadingSpinner.css"/>
+    <h:outputScript library="js" name="Chart.js"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8; width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=no" />
+
+    <!-- load Leaflet (openstreet map) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+          integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+          crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+            integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+            crossorigin=""></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</h:head>
+<body>
+<div class="main-flex-container">
+    <div class="control-container">
+        <h:form>
+            <div>
+                <h:selectOneMenu value="#{trendController.selectedState}" styleClass="dropdown">
+                    <f:selectItem itemValue="bw" itemLabel="Baden-Württemberg" />
+                    <f:selectItem itemValue="by" itemLabel="Bayern" />
+                    <f:selectItem itemValue="be" itemLabel="Berlin" />
+                    <f:selectItem itemValue="bb" itemLabel="Brandenburg" />
+                    <f:selectItem itemValue="hb" itemLabel="Bremen" />
+                    <f:selectItem itemValue="hh" itemLabel="Hamburg" />
+                    <f:selectItem itemValue="he" itemLabel="Hessen" />
+                    <f:selectItem itemValue="mv" itemLabel="Mecklenburg-Vorpommern" />
+                    <f:selectItem itemValue="ni" itemLabel="Niedersachsen" />
+                    <f:selectItem itemValue="nw" itemLabel="Nordrhein-Westfalen" />
+                    <f:selectItem itemValue="rp" itemLabel="Rheinland-Pfalz" />
+                    <f:selectItem itemValue="sl" itemLabel="Saarland" />
+                    <f:selectItem itemValue="sn" itemLabel="Sachsen" />
+                    <f:selectItem itemValue="st" itemLabel="Sachsen-Anhalt" />
+                    <f:selectItem itemValue="sh" itemLabel="Schleswig-Holstein" />
+                    <f:selectItem itemValue="th" itemLabel="Thüringen" />
+                    <f:ajax listener="#{trendController.changeState}" render="regions"/>
+                </h:selectOneMenu>
+            </div>
+            <p></p>
+            <div>
+                <canvas id="myChart" width="490" height="200"></canvas>
+            </div>
+            <p></p>
+            <div>
+                <h:panelGroup id="regions" class="" styleClass="long-table">
+                    <h:dataTable value = "#{trendController.filteredRegions}" var = "region"
+                                 styleClass = "CaseTable"
+                                 headerClass = "CaseTableHeader"
+                                 columnClasses="CaseTableNames,CaseTableCases,CaseTableIncidence"
+                                 rowClasses = "CaseTableOddRow,CaseTableEvenRow">
+                        <h:column>
+                            <f:facet name = "header">Region</f:facet>
+                            #{region.name}
+                        </h:column>
+                        <h:column>
+                            <f:facet name = "header">Cases</f:facet>
+                            #{region.cases}
+                        </h:column>
+                        <h:column>
+                            <f:facet name = "header">7-day incidence</f:facet>
+                            #{region.sevenDayIncidence}
+                        </h:column>
+                    </h:dataTable>
+                    <div class="center-horizontally">
+                        <h:panelGroup layout="block" id="paginationPanel"
+                                      styleClass="#{trendController.filteredRegions.size()==0?'hidden':''} ">
+                            <h:commandButton
+                                    action="#{trendController.regionPrevPage}"
+                                    value="❮❮"
+                                    disabled="#{trendController.regionPage lt 1}">
+                                <f:ajax render="regions"/>
+                            </h:commandButton>
+                            Seite #{trendController.regionPage + 1} von #{trendController.regionsPageCount()}
+                            <h:commandButton
+                                    action="#{trendController.regionNextPage}"
+                                    value="❯❯"
+                                    disabled="#{trendController.regionPage gt trendController.regionsPageCount()-2}">
+                                <f:ajax render="regions"/>
+                            </h:commandButton>
+                        </h:panelGroup>
+                    </div>
+                </h:panelGroup>
+            </div>
+
+
+            <h:commandScript name="loadGeoData" action="#{trendController.loadGeoData()}"/>
+            <h:commandScript name="loadChartData" action="#{trendController.loadGraphData()}"/>
+        </h:form>
+    </div>
+    <div class="map-container" id="map">
+    </div>
+</div>
+
+<h:outputScript library="js" name="trend.js"/>
+</body>
+</html>

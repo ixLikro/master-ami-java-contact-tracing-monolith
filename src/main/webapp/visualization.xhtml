@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+>
+
+<h:head>
+    <h:outputStylesheet library="css" name="visualization.css"/>
+    <h:outputStylesheet library="css" name="loadingSpinner.css"/>
+
+    <!-- load Leaflet (openstreet map) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+          integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+          crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+            integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+            crossorigin=""></script>
+    <h:outputScript library="js" name="leaflet-heat.js"/>
+</h:head>
+<body>
+<div class="main-flex-container">
+    <div class="control-container">
+        <p class="content-title">Webinterface der Kontaktnachverfolgung</p>
+        <div class="section-title">Heatmap:</div>
+        <!-- heatmap -->
+        <div style="min-height: 50px;">
+            <input type="checkbox" id="showHeatmapCheckbox" onchange="showHeatmap()"/>
+            <label id="showHeatmapLabel" for="showHeatmapCheckbox">
+                Zeige Heatmap mit Bewegungen aller Nutzer
+            </label>
+            <div id="heatmapSpinner" class="spin hidden"></div>
+        </div>
+
+        <h:form>
+            <div class="section-title">Nutzer Bewegungen:</div>
+            <!--selected user-->
+            <h:panelGroup id="selectedUser"
+                          style="margin-bottom: 16px"
+                          layout="block"
+                          rendered="#{not empty visualizationController.selectedMovementOverviews}">
+                Folgende User wurden gewählt:
+                <h:dataTable styleClass="long-table" style="width: 100%" var="overview"
+                             value="#{visualizationController.selectedMovementOverviews}">
+                    <h:column>
+                        <f:facet name="header">E-Mail</f:facet>
+                        #{overview.user.mail}
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Beweg.</f:facet>
+                        <div class="center-horizontally">#{overview.moveMovementCount}</div>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Farbe</f:facet>
+                        <div class="center-horizontally"
+                             style="width: 30px; height: 20px; background-color: #{overview.color}">
+                        </div>
+                    </h:column>
+                    <h:column>
+                        <div class="center-horizontally">
+                            <button type="button" onclick="javascript:flyToUserMovement(#{overview.user.id})">
+                                👁
+                            </button>
+                        </div>
+                    </h:column>
+                    <h:column>
+                        <div class="center-horizontally">
+                            <h:commandButton value="➖"
+                                             action="#{visualizationController.unselectOneUser(overview.user)}">
+                                <f:ajax render="@form"/>
+                            </h:commandButton>
+                        </div>
+                    </h:column>
+                </h:dataTable>
+            </h:panelGroup>
+            <!--user suche-->
+            <h:panelGroup layout="block"
+                          rendered="#{not empty visualizationController.selectedMovementOverviews}">
+                Alle Nutzer:
+            </h:panelGroup>
+            <div>
+                Suche:
+                <h:inputText value="#{visualizationController.filterUser}">
+                    <f:ajax event="keyup" render="userTable" delay="500"/>
+                </h:inputText>
+            </div>
+            <!--user table-->
+            <h:panelGroup id="userTable" class="" styleClass="long-table">
+                <h:outputLabel value="Keine Ergebnisse gefunden"
+                               styleClass="error #{visualizationController.filteredUsers.size()==0?'':'hidden'}"/>
+                <h:dataTable style="width: 100%"
+                             value="#{visualizationController.filteredUsers}"
+                             var="user"
+                             styleClass="#{visualizationController.filteredUsers.size()==0?'hidden':''}"
+                >
+                    <h:column>
+                        <f:facet name="header">E-Mail</f:facet>
+                        #{user.mail}
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Geburtstag</f:facet>
+                        #{user.dateOfBirth}
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">m/w/d</f:facet>
+                        <div class="center-horizontally">#{user.gender}</div>
+                    </h:column>
+                    <h:column>
+                        <div class="center-horizontally">
+                            <h:commandButton value="➕"
+                                             action="#{visualizationController.selectOneUser(user)}"
+                                             disabled="#{visualizationController.selectedUser.containsKey(user)}">
+                                <f:ajax render="@form"/>
+                            </h:commandButton>
+                        </div>
+                    </h:column>
+                </h:dataTable>
+                <div class="center-horizontally">
+                    <h:panelGroup layout="block" id="paginationPanel"
+                                  styleClass="#{visualizationController.filteredUsers.size()==0?'hidden':''} ">
+                        <h:commandButton
+                                action="#{visualizationController.userPrevPage}"
+                                value="👈"
+                                disabled="#{visualizationController.userPage lt 1}">
+                            <f:ajax render="userTable"/>
+                        </h:commandButton>
+                        Seite #{visualizationController.userPage + 1} von #{visualizationController.getUserPageCount()}
+                        <h:commandButton
+                                action="#{visualizationController.userNextPage}"
+                                value="👉"
+                                disabled="#{visualizationController.userPage gt visualizationController.getUserPageCount()-2}">
+                            <f:ajax render="userTable"/>
+                        </h:commandButton>
+                    </h:panelGroup>
+                </div>
+            </h:panelGroup>
+
+
+            <h:commandScript name="loadHeatDataFromServer" action="#{visualizationController.getHeatmapData()}"/>
+        </h:form>
+    </div>
+    <div class="map-container" id="map">
+    </div>
+</div>
+
+<h:outputScript library="js" name="visualization.js"/>
+</body>
+</html>

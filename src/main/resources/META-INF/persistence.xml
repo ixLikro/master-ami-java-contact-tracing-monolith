@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
+	version="2.1">
+
+	<persistence-unit name="nachverfolgung" >
+		<jta-data-source>java:jboss/datasources/nachverfolgung</jta-data-source>
+		<class>de.ami.team1.dataacceptance.entities.User</class>
+		<class>de.ami.team1.dataacceptance.entities.Movement</class>
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+		<properties>
+			<property name="hibernate.hbm2ddl.auto" value="validate" />
+			<property name="hibernate.show_sql" value="false"/>
+			<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/> <!-- DB Dialect -->
+		</properties>
+
+	</persistence-unit>
+
+	<persistence-unit name="movement_data" >
+		<jta-data-source>java:jboss/datasources/movement_data</jta-data-source>
+		<class>de.ami.team1.dataacceptance.entities.RawMovement</class>
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+		<properties>
+			<property name="hibernate.hbm2ddl.auto" value="validate" />
+			<property name="hibernate.show_sql" value="false"/>
+			<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/> <!-- DB Dialect -->
+		</properties>
+	</persistence-unit>
+</persistence>

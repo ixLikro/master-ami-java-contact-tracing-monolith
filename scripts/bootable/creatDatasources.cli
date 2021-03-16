@@ -1,0 +1,2 @@
+data-source add --jndi-name=${jndi1} --name=${name1} --connection-url=${connectionURL1} --driver-name=${driver} --user-name=${userName} --password=${pw}
+data-source add --jndi-name=${jndi2} --name=${name2} --connection-url=${connectionURL2} --driver-name=${driver} --user-name=${userName} --password=${pw}

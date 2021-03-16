@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+>
+
+<h:head>
+    <h:outputStylesheet library="css" name="landingpage.css"/>
+    <title>Kontaktnachverfolgung</title>
+</h:head>
+<body>
+<div class="main-flex-container">
+    <span class="header">Kontaktnachverfolgung</span>
+    <h:panelGroup class="control-container">
+        <span class="sub-header">Datagenerator</span>
+        <h:form id="gerneratorForm" rendered="#{landingpageDataGeneratorController.available}">
+            <h:panelGroup styleClass="error" rendered="#{landingpageDataGeneratorController.showError}">
+                <p>#{landingpageDataGeneratorController.errorString}</p>
+            </h:panelGroup>
+            <div class="generator-container">
+                <div class="generator-child">
+                    <span>Bewegungen pro Nutzer:</span>
+                    <h:inputText id="gerneratAmountOfPoints"
+                                 value="#{landingpageDataGeneratorController.amountOfPoints}">
+                    </h:inputText>
+                </div>
+                <div class="generator-child">
+                    <span>Anzahl Nutzer:</span>
+                    <h:inputText id="gerneratUser" value="#{landingpageDataGeneratorController.amountUser}">
+                    </h:inputText>
+                </div>
+                <div class="generator-child">
+                    <span>Anzahl neuer User:</span>
+                    <h:inputText id="gerneratNewUser" value="#{landingpageDataGeneratorController.amountNewUser}">
+                    </h:inputText>
+                </div>
+            </div>
+            <div>
+                <p>
+                    <b>Bewegungen pro Nutzer</b>: Anzahl der Bewegungspunkte, die pro ausgewählten Nutzer generiert werden sollen.
+                    <br/>
+                    <b>Anzahl Nutzer</b>: Anzahl der Nutzer, die zufällig aus den bestehenden Nutzern ausgewählt werden sollen.<br/>
+                    Wird eine größere Zahl angegeben, als Nutzer bestehen, werden neue Nutzer generiert und ausgewählt.<br/>
+                    <b>Anzahl neuer User</b>: Anzahl der Nutzer, die generiert und ausgewählt werden sollen.
+                </p>
+            </div>
+            <div class="generator-container">
+                <div style="flex-grow: 3"></div>
+                <h:commandButton value="Daten generieren" action="#{landingpageDataGeneratorController.startGenerator}">
+                </h:commandButton>
+            </div>
+        </h:form>
+        <h:panelGroup rendered="#{not landingpageDataGeneratorController.isAvailable()}">
+            <div class="error">
+                Datengenerator kann unter #{landingpageDataGeneratorController.URL} nicht ereicht werden 🙄
+                <br/>
+                Ist der <a
+                    href="https://gitlab-fi.ostfalia.de/ami-team-1/data-generator"> Generator </a> eingeschaltet? Ist der Port korrekt?
+            </div>
+        </h:panelGroup>
+    </h:panelGroup>
+    <div class="flex-row">
+        <div class="control-container">
+            <span class="sub-header">Daten analysieren</span>
+            <div style="margin-top: 8px">
+                <a href="visualization.xhtml">
+                    <button>
+                        Zur Visualisierung
+                    </button>
+                </a>
+            </div>
+            <div>
+                Bewegung der Nutzer nachvolziehen und als Headmap anzeigen.
+            </div>
+            <div style="margin-top: 8px">
+                <a href="trend.xhtml">
+                    <button>
+                        Zur Trendanalyse
+                    </button>
+                </a>
+            </div>
+            <div>
+                Statistiken zu Infektionszahlen, gruppiert nach Gebieten wie Landkreise.
+            </div>
+        </div>
+        <div class="control-container" style="min-width: 400px;">
+            <span class="sub-header">Mehrere Nutzer Infektiös melden</span>
+            <h:form id="reportInfectionForm" style="margin-top: 20px">
+                <h:panelGroup styleClass="error" rendered="#{landingpageMultipleInfectionReport.showError}">
+                    <p>#{landingpageMultipleInfectionReport.errorString}</p>
+                </h:panelGroup>
+                <div class="generator-container">
+                    <div class="generator-child">
+                        % der Nutzer:
+                        <h:inputText id="percent"
+                                     value="#{landingpageMultipleInfectionReport.amount}">
+                            <f:ajax event="keyup" render="reportInfectionForm" delay="500"/>
+                        </h:inputText>
+                    </div>
+                    <div class="generator-child">
+                        <h:commandButton value="#{landingpageMultipleInfectionReport.buttonLabel}"
+                                         action="#{landingpageMultipleInfectionReport.reportInfected}"
+                                         disabled="#{not (landingpageMultipleInfectionReport.amount gt 0.0)}">
+                        </h:commandButton>
+                    </div>
+                </div>
+            </h:form>
+        </div>
+    </div>
+    <div class="control-container">
+        <span class="sub-header">Neuen Nutzer anlegen</span>
+        <h:form id="newUserForm">
+            <h:panelGroup styleClass="error" rendered="#{landingpageNewUserController.showError}">
+                <p>#{landingpageNewUserController.errorString}</p>
+            </h:panelGroup>
+            <div class="generator-container">
+                <div class="generator-child">
+                    Email:
+                    <h:inputText id="newUserEmail"
+                                 value="#{landingpageNewUserController.email}">
+                    </h:inputText>
+                </div>
+                <div class="generator-child">
+                    Geburtstag:
+                    <div>
+                        <h:selectOneMenu value="#{landingpageNewUserController.year}">
+                            <f:selectItems value="#{landingpageNewUserController.yearValues}"/>
+                        </h:selectOneMenu>
+                        <h:selectOneMenu value="#{landingpageNewUserController.month}">
+                            <f:selectItem itemValue="1" itemLabel="Januar"/>
+                            <f:selectItem itemValue="2" itemLabel="Februar"/>
+                            <f:selectItem itemValue="3" itemLabel="März"/>
+                            <f:selectItem itemValue="4" itemLabel="April"/>
+                            <f:selectItem itemValue="5" itemLabel="Mai"/>
+                            <f:selectItem itemValue="6" itemLabel="Juni"/>
+                            <f:selectItem itemValue="7" itemLabel="Juli"/>
+                            <f:selectItem itemValue="8" itemLabel="August"/>
+                            <f:selectItem itemValue="9" itemLabel="September"/>
+                            <f:selectItem itemValue="10" itemLabel="Oktober"/>
+                            <f:selectItem itemValue="11" itemLabel="November"/>
+                            <f:selectItem itemValue="12" itemLabel="Dezember"/>
+                        </h:selectOneMenu>
+                        <h:selectOneMenu value="#{landingpageNewUserController.day}">
+                            <f:selectItems value="#{landingpageNewUserController.dayValues}"/>
+                        </h:selectOneMenu>
+                    </div>
+                </div>
+                <div class="generator-child">
+                    Geschlecht:
+                    <h:selectOneMenu value="#{landingpageNewUserController.gender}">
+                        <f:selectItem itemValue="m" itemLabel="m"/>
+                        <f:selectItem itemValue="w" itemLabel="w"/>
+                        <f:selectItem itemValue="d" itemLabel="d"/>
+                    </h:selectOneMenu>
+                </div>
+            </div>
+            <div class="generator-container">
+                <div style="flex-grow: 3"></div>
+                <h:commandButton value="Nutzer anlegen" action="#{landingpageNewUserController.createUser}">
+                    <f:ajax execute="newUserForm" render="manuallyForm newUserForm"/>
+                </h:commandButton>
+            </div>
+        </h:form>
+    </div>
+    <div class="control-container">
+        <span class="sub-header">Nutzerdaten einsehen und bearbeiten</span>
+        <h:form id="manuallyForm">
+            <div class="manually-container">
+                <div class="manually-child">
+                    <div>
+                        Suche:
+                        <h:inputText value="#{landingpageManuallyController.filterUser}">
+                            <f:ajax event="keyup" render="userTable" delay="500"/>
+                        </h:inputText>
+                    </div>
+                    <!--user table-->
+                    <h:panelGroup id="userTable" class="" styleClass="long-table">
+                        <h:outputLabel value="Keine Ergebnisse gefunden"
+                                       styleClass="error #{landingpageManuallyController.filteredUsers.size()==0?'':'hidden'}"/>
+                        <h:dataTable value="#{landingpageManuallyController.filteredUsers}"
+                                     style="width: 100%"
+                                     var="user"
+                                     styleClass="#{landingpageManuallyController.filteredUsers.size()==0?'hidden':''}"
+                        >
+                            <h:column>
+                                <f:facet name="header">E-Mail</f:facet>
+                                #{user.mail}
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Geburtstag</f:facet>
+                                #{user.dateOfBirth}
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">m/w/d</f:facet>
+                                <div class="center-horizontally">#{user.gender}</div>
+                            </h:column>
+                            <h:column>
+                                <div class="center-horizontally">
+                                    <h:commandButton value="❯❯"
+                                                     disabled="#{landingpageManuallyController.selectedUser.id == user.id}"
+                                                     action="#{landingpageManuallyController.selectOneUser(user)}"
+                                    >
+                                        <f:ajax render="@form"/>
+                                    </h:commandButton>
+                                </div>
+                            </h:column>
+                        </h:dataTable>
+                        <div class="center-horizontally">
+                            <h:panelGroup layout="block" id="paginationPanel"
+                                          styleClass="#{landingpageManuallyController.filteredUsers.size()==0?'hidden':''} ">
+                                <h:commandButton
+                                        action="#{landingpageManuallyController.userPrevPage}"
+                                        value="👈"
+                                        disabled="#{landingpageManuallyController.userPage lt 1}">
+                                    <f:ajax render="userTable"/>
+                                </h:commandButton>
+                                Seite #{landingpageManuallyController.userPage + 1} von #{landingpageManuallyController.getUserPageCount()}
+                                <h:commandButton
+                                        action="#{landingpageManuallyController.userNextPage}"
+                                        value="👉"
+                                        disabled="#{landingpageManuallyController.userPage gt landingpageManuallyController.getUserPageCount()-2}">
+                                    <f:ajax render="userTable"/>
+                                </h:commandButton>
+                            </h:panelGroup>
+                        </div>
+                    </h:panelGroup>
+                </div>
+                <div class="divider">
+                </div>
+                <div class="manually-child">
+                    <h:panelGroup layout="block" id="userPanel"
+                                  rendered="#{landingpageManuallyController.selectedUser != null}">
+                        <div>
+                            <div>
+                                <span style="margin-bottom: 4px">Nutzerdaten:</span>
+                                <h:dataTable value="#{landingpageManuallyController.userInfos}"
+                                             var="info"
+                                             style="margin: auto; "
+                                >
+                                    <h:column>
+                                        #{info.key}
+                                    </h:column>
+                                    <h:column>
+                                        #{info.value}
+                                    </h:column>
+                                </h:dataTable>
+                            </div>
+                            <div style="margin-top: 8px">
+                                Infektiös?
+                                <h:panelGroup styleClass="error"
+                                              rendered="#{landingpageManuallyController.showErrorReport}">
+                                    <p>#{landingpageManuallyController.errorReport}</p>
+                                </h:panelGroup>
+                                <div class="generator-container">
+                                    <div style="flex-grow: 3"></div>
+                                    <h:commandButton action="#{landingpageManuallyController.reportInfected()}"
+                                                     value="Nutzer #{landingpageManuallyController.selectedUser.mail} infektiös melden">
+                                        <f:ajax render="@form"/>
+                                    </h:commandButton>
+                                </div>
+                            </div>
+                            <div style="margin-top: 8px">
+                                Bewegungsdaten hinzufügen:
+                                <h:panelGroup styleClass="error"
+                                              rendered="#{landingpageManuallyController.showErrorMovement}">
+                                    <p>#{landingpageManuallyController.errorMovement}</p>
+                                </h:panelGroup>
+                                <div class="even-container">
+                                    <div style="width: 100px">
+                                        LAT:
+                                        <h:inputText id="latitude" style="width: 100px"
+                                                     value="#{landingpageManuallyController.latitude}">
+                                        </h:inputText>
+                                    </div>
+                                    <div style="width: 100px">
+                                        LON:
+                                        <h:inputText id="longitude" style="width: 100px"
+                                                     value="#{landingpageManuallyController.longitude}">
+                                        </h:inputText>
+                                    </div>
+                                </div>
+                                <div class="generator-container">
+                                    <div style="flex-grow: 3"></div>
+                                    <h:commandButton value="Bewegungspunkt hinzufügen"
+                                                     action="#{landingpageManuallyController.addMovement()}">
+                                        <f:ajax execute="latitude longitude" render="@form"/>
+                                    </h:commandButton>
+                                </div>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+                    <h:panelGroup layout="block" rendered="#{landingpageManuallyController.selectedUser == null}">
+                        Noch kein Nutzer ausgewählt!
+                    </h:panelGroup>
+                </div>
+            </div>
+        </h:form>
+    </div>
+</div>
+</body>
+</html>
