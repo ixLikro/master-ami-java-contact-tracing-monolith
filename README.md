@@ -20,6 +20,9 @@ The goal of this software was to implement a technical showcase rather than a us
 
 ![readme gif](https://github.com/ixLikro/master-ami-java-contact-tracing-monolith/blob/master/misc/readme_gif.gif?raw=true)
 
+## Architecture overview
+![Architecture overview](https://github.com/ixLikro/master-ami-java-contact-tracing-monolith/blob/master/misc/architecture.png?raw=true)
+
 ## Run the monolith **
 1. Clone this repo
    ```
