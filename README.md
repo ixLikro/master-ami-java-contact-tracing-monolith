@@ -5,6 +5,11 @@ A monolithic implementation and a microservice implementation.
 
 This is the monolithic implementation, you can find the microservice implementation [here](https://github.com/ixLikro/master-ami-java-contact-tracing-services).
 
+## Team members
+- [@abail0111](https://github.com/abail0111)
+- [@bkoern](https://github.com/bkoern)
+- [@ixLikro](https://github.com/ixLikro)
+- [@LuKlose](https://github.com/LuKlose)
 
 # Contact tracing
 
